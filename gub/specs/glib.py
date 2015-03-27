@@ -5,19 +5,21 @@ from gub import target
 from gub import w32
 
 class Glib (target.AutoBuild):
-    source = 'http://ftp.gnome.org/pub/GNOME/platform/2.27/2.27.91/sources/glib-2.21.5.tar.gz'
-    ##source = 'http://ftp.gnome.org/pub/GNOME/platform/2.25/2.25.5/sources/glib-2.19.5.tar.gz'
-    dependencies = ['tools::glib', 'tools::libtool', 'gettext-devel']
+    #source = 'http://ftp.gnome.org/pub/GNOME/sources/glib/2.30/glib-2.30.3.tar.xz'
+    source = 'http://ftp.gnome.org/pub/GNOME/sources/glib/2.43/glib-2.43.4.tar.xz'
+    dependencies = ['tools::glib', 'tools::libtool', 'gettext-devel', 'zlib', 'libxml2', 'libffi']
+    #patches = ['glib-2.27.ZLIB_VERNUM.patch']
     config_cache_overrides = target.AutoBuild.config_cache_overrides + '''
 glib_cv_stack_grows=${glib_cv_stack_grows=no}
+glib_cv_long_long_format=${glib_cv_long_long_format=I64}
 '''
     if 'stat' in misc.librestrict (): # stats for /USR/include/glib/...
         install_flags = (target.AutoBuild.install_flags
                          + ' LD_PRELOAD=%(tools_prefix)s/lib/librestrict-open.so')
-    def patch (self):
-        target.AutoBuild.patch (self)
-        self.file_sub ([('GIO_MODULE_DIR', 'getenv ("GIO_MODULE_DIR")')],
-                       '%(srcdir)s/gio/giomodule.c', must_succeed=True)
+    #def patch (self):
+        #target.AutoBuild.patch (self)
+        #self.file_sub ([('GIO_MODULE_DIR', 'getenv ("GIO_MODULE_DIR")')],
+         #              '%(srcdir)s/gio/giomodule.c', must_succeed=True)
     def update_libtool (self): # linux-x86, linux-ppc, freebsd-x86
         target.AutoBuild.update_libtool (self)
         self.map_locate (w32.libtool_disable_relink, '%(builddir)s', 'libtool')
@@ -39,11 +41,15 @@ class Glib__darwin (Glib):
         Glib.configure (self)
         self.file_sub ([('nmedit', '%(target_architecture)s-nmedit')],
                        '%(builddir)s/libtool')
-
+    #patches = ['patches/glib-2.27.ZLIB_VERNUM.patch']
 class Glib__darwin__x86 (Glib__darwin):
     # LIBS bugfix from:
     #   https://bugzilla.gnome.org/show_bug.cgi?id=586150
-    configure_variables = Glib.configure_variables + ' LIBS=-lresolv'
+    configure_variables = (Glib.configure_variables 
+			+ ' LIBS=-lresolv'
+			+ ' LDFLAGS=-march=i486'
+			+ ' CFLAGS=-march=i486'
+			)
     def compile (self):
         self.file_sub ([('(SUBDIRS = .*) tests', r'\1'),
                         (r'GTESTER = \$.*', ''),
@@ -55,7 +61,7 @@ class Glib__darwin__x86 (Glib__darwin):
 class Glib__mingw (Glib):
     dependencies = Glib.dependencies + ['libiconv-devel']
     def update_libtool (self): # linux-x86, linux-ppc, freebsd-x86
-        target.AutoBuild.update_libtool (self)
+        #target.AutoBuild.update_libtool (self)
         self.map_locate (w32.libtool_disable_relink, '%(builddir)s', 'libtool')
 
 class Glib__freebsd (Glib):
@@ -71,9 +77,10 @@ class Glib__freebsd__x86 (Glib__freebsd):
 
 class Glib__tools (tools.AutoBuild, Glib):
     dependencies = [
-            'gettext',
+            #'gettext',
             'libtool',
             'pkg-config',
+	    'libffi'
             ]            
     configure_flags = (tools.AutoBuild.configure_flags
                        + ' --build=%(build_architecture)s'
