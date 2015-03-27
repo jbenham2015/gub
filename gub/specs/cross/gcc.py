@@ -8,7 +8,7 @@ from gub import misc
 from gub.specs import gcc
 
 class Gcc (cross.AutoBuild):
-    source = 'http://ftp.gnu.org/pub/gnu/gcc/gcc-4.8.2/gcc-4.8.2.tar.bz2'
+    source = 'http://ftp.gnu.org/pub/gnu/gcc/gcc-4.9.2/gcc-4.9.2.tar.bz2'
     dependencies = [
         'cross/binutils',
         'system::gcc',
@@ -16,6 +16,7 @@ class Gcc (cross.AutoBuild):
         'tools::gmp',
         'tools::mpfr',
         'tools::mpc',
+        'tools::gawk',
     ]
     patches = ['gcc-4.8.2-libstdc++-debug-path.patch']
     configure_command = (''' LDFLAGS='-L%(tools_prefix)s/lib %(rpath)s' '''
@@ -71,6 +72,11 @@ gcc_tooldir='%(prefix_dir)s/%(target_architecture)s'
 class Gcc__from__source (Gcc):
     dependencies = (Gcc.dependencies
                     + ['cross/gcc-core', 'glibc-core'])
+    def __init__ (self, settings, source):
+        Gcc.__init__ (self, settings, source)
+        if 'i686-linux' in self.settings.build_architecture:
+            if 'i686-linux' in self.settings.target_architecture:
+                self.configure_flags += ' --build=i686-unknown-linux-gnu '
     #FIXME: merge all configure_command settings with Gcc
     configure_flags = (Gcc.configure_flags
                 + misc.join_lines ('''
@@ -79,6 +85,7 @@ class Gcc__from__source (Gcc):
 --disable-nls
 --disable-libitm
 --disable-libsanitizer
+--disable-libcilkrts
 --enable-threads=posix
 --enable-__cxa_atexit
 --enable-symvers=gnu
