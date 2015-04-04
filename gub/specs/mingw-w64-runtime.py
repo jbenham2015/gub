@@ -23,6 +23,7 @@ rm -f %(install_prefix)s/lib/libgcc_s.a # for cross/gcc conflict
 rm -f %(install_prefix)s/lib/libquadmath-0.dll # for cross/gcc conflict
 rm -f %(install_prefix)s/lib/libssp-0.dll # for cross/gcc conflict
 rm -f %(install_prefix)s/lib/libgcc_s_sjlj-1.dll # for cross/gcc conflict
+patch %(install_prefix)s/include/netioapi.h %(patchdir)s/mingw-w64-runtime-if_nametoindex.patch
 rm -f %(install_prefix)s/include/zlib.h # for zlib conflict
 rm -f %(install_prefix)s/include/zconf.h # for zlib conflict
 rm -f %(install_prefix)s/lib/libz.a # for zlib conflict
