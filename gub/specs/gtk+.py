@@ -10,7 +10,7 @@ class Gtk_x_ (target.AutoBuild):
     dependencies = ['libtool',
                 'atk-devel',
 		'gdk-pixbuf-2',
-                'pango-devel',
+                'pangocairo',
                 ]
     configure_flags = (target.AutoBuild.configure_flags
 		+ ' --enable-static'

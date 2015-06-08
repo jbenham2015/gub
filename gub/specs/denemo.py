@@ -2,7 +2,6 @@
 TODO:
   * figure out solution pango/pangocairo, lilypond/lilypondcairo mess
   * add jack for windows?
-  * what about timidity?
   * relocation: non-windows dynamic relocation in main.c
   * relocation: fix locale dir
 '''
@@ -13,94 +12,98 @@ from gub import target
 
 class Denemo (target.AutoBuild):
     source = 'git://git.savannah.gnu.org/denemo.git'
-    patches = [ ]
-    subpackage_names = ['']
-    dependencies = [
-        'cross/gcc-c++-runtime',
-        'tools::automake',
-        'tools::gettext',
-        'tools::libtool',
-        'tools::pkg-config',
-        'epdfview', # Builds, but needs dynamic relocation patches.
-        'fluidsynth',
-        'guile-devel',
-        'gtk+-devel',
-        'jack-devel',
-        'lash-devel',
-        'libaubio-devel',
-        'libgtksourceview-devel',
-        'librsvg-devel', 
-        'libxml2-devel',
-        'lilypondcairo',
-        'portaudio-devel',
-	'cairo',
-        ]
-    configure_flags = (target.AutoBuild.configure_flags
-                       + ' --enable-binreloc'
-                       + ' --enable-jack'
-                       + ' --enable-fluidsynth'
-                       + ' --program-prefix='
-                       )
-    # FIXME: --enable-binreloc has been neutralized.
-    make_flags = 'BINRELOC_CFLAGS=-DENABLE_BINRELOC=1'
+    branch = 'master'
+    #patches = ['denemo-audio.patch']
+    #source = 'http://www.denemo.org/downloads/denemo-1.1.8.tar.gz'
+    patches = ['denemo-1.1.4-run-lilypond.patch', 'denemo-lilypond-path.patch']
 
+    dependencies = [
+	#'glib',
+        'lilypond',
+	#'lilypondcairo',
+	#'lilybundle',
+	'gtk+',
+	'librsvg', 
+	'evince',
+        'aubio-devel',
+        'libgtksourceview',
+ 	'guile-devel',
+        'portaudio-devel',
+ 	'libsndfile',
+	'fluidsynth',
+	'portmidi',
+	'librubberband'
+        ]
     def __init__ (self, settings, source):
         target.AutoBuild.__init__ (self, settings, source)
         if isinstance (source, repository.Git):
-            source.version = misc.bind_method (repository.Repository.version_from_configure_in, source)
+            source.version = misc.bind_method (repository.Repository.version_from_configure_ac, source)
     def compile (self):
         if isinstance (self.source, repository.Git):
             # FIXME: missing dependency
-            self.system ('cd %(builddir)s/src && make lylexer.c')
-        target.AutoBuild.compile (self)
+            # self.system ('cd %(builddir)s/src && make lylexer.c')
+            target.AutoBuild.compile (self)
 
-class Denemo__mingw__windows (Denemo):
-    dependencies = [x for x in Denemo.dependencies
-                    if x.replace ('-devel', '') not in [
-            'jack',
-            'lash',
-            ]] + ['lilypad']
+class Denemo__linux__x86 (Denemo):
+    #dependencies = (Denemo.dependencies + ['alsa-devel'])
+    #patches = Denemo.patches + ['denemo-run-lilypond.patch']
+
     configure_flags = (Denemo.configure_flags
-                       .replace ('--enable-jack', '--disable-jack'))
-    make_flags = ''
+                   		+ ' --enable-binreloc'
+				+ ' --disable-portmidi')
+    configure_variables = (Denemo.configure_variables
+			   + ' CFLAGS="-g -D_HAVE_PORTMIDI_ -D_GUB_BUILD_ -I%(system_prefix)s/include/evince/3.0 " '			   
+			   + ' LDFLAGS="-L%(system_prefix)s/lib" ')
+    make_flags = Denemo.make_flags + 'LDFLAGS+="-lportmidi -lporttime" '
 
-class Denemo__mingw__console (Denemo__mingw__windows):
-    configure_flags = (Denemo__mingw__windows.configure_flags
-                       + ' --enable-debugging')
+class Denemo__mingw (Denemo):
+    #dependencies = (Denemo.dependencies + ['lilypad'])
+    configure_flags = (Denemo.configure_flags
+		       	   + ' --disable-binreloc'
+			   + ' --enable-portmidi'
+			   + ' --disable-alsa'
+			   + ' --enable-rubberband')
+    configure_variables = (Denemo.configure_variables
+			   + ' CFLAGS="-D_HAVE_PORTMIDI_ -D_GUB_BUILD_ -I%(system_prefix)s/include/evince/3.0 " '
+			   + ' LDFLAGS="-L%(system_prefix)s/lib" ')
+    make_flags = Denemo.make_flags + ' LDFLAGS+="-lportmidi -lporttime"'
     def __init__ (self, settings, source):
-        Denemo__mingw__windows.__init__ (self, settings, source)
+        Denemo.__init__ (self, settings, source)
         # Configure (link) without -mwindows for denemo-console.exe
         self.target_gcc_flags = '-mms-bitfields'
     def compile (self):
-        Denemo__mingw__windows.compile (self)
+        Denemo.compile (self)
         self.system ('''
+cd %(builddir)s && make
 cd %(builddir)s/src && mv .libs/denemo.exe denemo-console.exe && rm -f denemo.exe
 cd %(builddir)s/src && make AM_LDFLAGS="-mwindows" && cp -p .libs/denemo.exe denemo-windows.exe
 ''')
     def install (self):
-        Denemo__mingw__windows.install (self)
+        Denemo.install (self)
         self.system ('''
 install -m755 %(builddir)s/src/denemo-windows.exe %(install_prefix)s/bin/denemo.exe
 install -m755 %(builddir)s/src/denemo-console.exe %(install_prefix)s/bin/denemo-console.exe
 ''')
 
-# Use debugging for Windows for now.
-# Denemo__mingw = Denemo__mingw__windows
-Denemo__mingw = Denemo__mingw__console
-
 class Denemo__darwin (Denemo):
-    dependencies = [x for x in Denemo.dependencies
-                    if x.replace ('-devel', '') not in [
-            'jack',
-            'lash',
-            'libxml2', # Included in darwin-sdk, hmm?
-            ]] + [
+    dependencies = (Denemo.dependencies + [
         'fondu',
         'osx-lilypad',
-        ]
+        ])
+    #patches = Denemo.patches + ['denemo-run-lilypond.patch']
     configure_flags = (Denemo.configure_flags
-                       .replace ('--enable-jack', '--disable-jack')
-                       + ' "CPPFLAGS=-I%(system_prefix)s/include -I%(system_prefix)s/include/sys"')
+		       	   + ' --disable-binreloc'
+			   + ' --enable-portmidi'
+			   + ' --enable-portaudio'
+			   + ' --disable-x11'
+			   + ' --enable-rubberband'
+			   + ' --disable-jack')
+
+    configure_variables = (Denemo.configure_variables
+                           + ' CFLAGS="-g -O0 -D_HAVE_PORTMIDI_ -D_MACH_O_ -D_GUB_BUILD_ -I%(system_prefix)s/include/evince/3.0 " '
+                           + ' LDFLAGS="-L%(system_prefix)s/lib -Wl,-framework,CoreMIDI -lgcc_eh -lgcc -lc -lfftw3" ')
+	 
+    make_flags = Denemo.make_flags + ' LDFLAGS+="-lportmidi -lporttime"'
 
 class Denemo__darwin__ppc (Denemo__darwin):
     # make sure that PREFIX/include/unistd.h gets included
