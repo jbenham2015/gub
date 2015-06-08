@@ -1,5 +1,8 @@
 import os
 import sys
+import re
+#python_version = '2.4'
+python_version = '2.6'
 #
 from gub import build
 from gub import context
