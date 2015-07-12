@@ -177,6 +177,6 @@ gub_to_distro_dict = {
     'libtool-runtime': ['libltdl3'],
     'libiconv-devel': ['libiconv2'],
     'pango': ['libpango1.0-0'],
-    'python-devel': ['python2.4-dev'],
-    'python-runtime': ['python2.4'],
+    'python-devel': ['python2.6-dev'],
+    'python-runtime': ['python2.6'],
     }
