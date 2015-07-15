@@ -11,21 +11,18 @@ from gub import repository
 from gub import target
 
 class Denemo (target.AutoBuild):
-    source = 'git://git.savannah.gnu.org/denemo.git'
-    branch = 'master'
-    #patches = ['denemo-audio.patch']
-    #source = 'http://www.denemo.org/downloads/denemo-1.1.8.tar.gz'
+    #source = 'git://git.savannah.gnu.org/denemo.git'
+    #branch = 'master'
+    
+    source = 'http://denemo.org/downloads/denemo-1.2.4.tar.gz'
     patches = ['denemo-1.1.4-run-lilypond.patch', 'denemo-lilypond-path.patch']
 
     dependencies = [
-	#'glib',
-        'lilypond',
-	#'lilypondcairo',
-	#'lilybundle',
-	'gtk+',
+        'lilypondcairo',
+	'gtk+-devel',
 	'librsvg', 
 	'evince',
-        'aubio-devel',
+        'libaubio',
         'libgtksourceview',
  	'guile-devel',
         'portaudio-devel',
@@ -46,18 +43,18 @@ class Denemo (target.AutoBuild):
 
 class Denemo__linux__x86 (Denemo):
     #dependencies = (Denemo.dependencies + ['alsa-devel'])
-    #patches = Denemo.patches + ['denemo-run-lilypond.patch']
 
     configure_flags = (Denemo.configure_flags
                    		+ ' --enable-binreloc'
-				+ ' --disable-portmidi')
+				+ ' --enable-alsa'
+				+ ' --disable-portmidi') #for some reason autoconf is having trouble find it even when it is there!
     configure_variables = (Denemo.configure_variables
 			   + ' CFLAGS="-g -D_HAVE_PORTMIDI_ -D_GUB_BUILD_ -I%(system_prefix)s/include/evince/3.0 " '			   
 			   + ' LDFLAGS="-L%(system_prefix)s/lib" ')
     make_flags = Denemo.make_flags + 'LDFLAGS+="-lportmidi -lporttime" '
 
 class Denemo__mingw (Denemo):
-    #dependencies = (Denemo.dependencies + ['lilypad'])
+    dependencies = (Denemo.dependencies + ['lilypad'])
     configure_flags = (Denemo.configure_flags
 		       	   + ' --disable-binreloc'
 			   + ' --enable-portmidi'

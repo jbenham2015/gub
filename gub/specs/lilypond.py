@@ -6,8 +6,10 @@ from gub import loggedos
 from gub import misc
 from gub import repository
 from gub import target
+from gub import tools
 from gub import versiondb
 from gub.specs import ghostscript
+from gub.tools import python_version
 
 VERSION='v2.14'
 def url (version=VERSION):
@@ -38,9 +40,8 @@ sheet music from a high-level description file.'''
         'urw-fonts',
 
         'tools::autoconf',
-        'tools::bison',
         'tools::flex',
-        'tools::fontforge',
+        #'tools::fontforge',
         'tools::gettext', # AM_GNU_GETTEXT
         'tools::pkg-config',
         'tools::t1utils',
@@ -51,6 +52,7 @@ sheet music from a high-level description file.'''
         'system::mf', 
         'system::mpost', 
         ]
+    python_version = tools.python_version
     if 'stat' in misc.librestrict ():
         dependencies = [x for x in dependencies
                         if x not in ['system::mf', 'system::mpost']
@@ -61,7 +63,7 @@ sheet music from a high-level description file.'''
                        + ' --enable-relocation'
                        + ' --enable-rpath'
                        + ' --disable-documentation'
-                       + ' --with-fonts-dir=%(system_prefix)s/share/fonts/default/Type1'
+                       + ' --with-ncsb-dir=%(system_prefix)s/share/fonts/default/Type1'
                        )
     make_flags = ' TARGET_PYTHON=/usr/bin/python'
 
@@ -75,10 +77,6 @@ sheet music from a high-level description file.'''
             'VERSION', 'MAJOR_VERSION',
             '%(MAJOR_VERSION)s.%(MINOR_VERSION)s.%(PATCH_LEVEL)s')
 
-    @staticmethod
-    def bind_version (self):
-        self.version = misc.bind_method (LilyPond.version_from_VERSION, self)
-
     def __init__ (self, settings, source):
         target.AutoBuild.__init__ (self, settings, source)
         # FIXME: should add to C_INCLUDE_PATH
@@ -89,10 +87,7 @@ sheet music from a high-level description file.'''
                                  + ' -I%(builddir)s' % locals ()
                                  + ' -I%(srcdir)s/lily/out' % locals ())
         if isinstance (source, repository.Git):
-            if source.is_downloaded ():
-                source.version = misc.bind_method (LilyPond.version_from_VERSION, source)
-            else:
-                source.post_download_hook = misc.bind_method (LilyPond.bind_version, source)
+            source.version = misc.bind_method (LilyPond.version_from_VERSION, source)
         if 'stat' in misc.librestrict () and not 'tools::texlive' in self.dependencies:
             build.append_dict (self, {'PATH': os.environ['PATH']}) # need mf, mpost from system
     def get_conflict_dict (self):
@@ -171,8 +166,10 @@ class LilyPond__mingw (LilyPond):
     dependencies = LilyPond.dependencies + [
             'tools::imagemagick',
             'tools::icoutils',
-            'mingw-w64-runtime-winpthread-dll',
             ]
+    python_lib = '%(system_prefix)s/bin/libpython*.dll'
+    make_flags = (LilyPond.make_flags
+                  + ' LDFLAGS="%(python_lib)s"'  % locals ())
     # ugh Python hack: C&P Cygwin
     def compile (self):
         self.system ('''
@@ -230,7 +227,7 @@ class LilyPond__debian (LilyPond):
             'libfontconfig1-dev',
             'libfreetype6-dev',
             'libglib2.0-dev',
-            'python2.4-dev',
+            'python%(python_version)s' % globals (),
             'libpango1.0-dev',
             'zlib1g-dev',
             'urw-fonts',
@@ -240,8 +237,8 @@ class LilyPond__darwin (LilyPond):
     dependencies = (LilyPond.dependencies
                 # FIXME: move to lilypond-installer.py, see __mingw.
                 + [
-                'fondu',
-                'osx-lilypad',
+                #'fondu',
+                #'osx-lilypad',
                 ])
     configure_flags = (LilyPond.configure_flags
                 .replace ('--enable-rpath', '--disable-rpath'))
@@ -250,7 +247,7 @@ class LilyPond__darwin (LilyPond):
 class LilyPond__darwin__ppc (LilyPond__darwin):
     def configure (self):
         LilyPond__darwin.configure (self)
-        self.dump ('CXXFLAGS += -fpermissive -DGUILE_ELLIPSIS=...',
+        self.dump ('CXXFLAGS += -DGUILE_ELLIPSIS=...',
                    '%(builddir)s/local.make')
 
 class LilyPond_base (target.AutoBuild):

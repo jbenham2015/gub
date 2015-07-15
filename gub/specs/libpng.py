@@ -2,24 +2,11 @@ from gub import target
 from gub import tools 
 
 class Libpng (target.AutoBuild):
-    source = 'http://sourceforge.net/projects/libpng/files/libpng12/1.2.53/libpng-1.2.53.tar.gz'
-    dependencies = ['zlib-devel', 'tools::autoconf', 'tools::automake', 'tools::libtool']
-    def name (self):
-        return 'libpng'
-    def patch (self):
-        target.AutoBuild.patch (self)
-        self.file_sub ([('(@INSTALL.*)@PKGCONFIGDIR@',
-                r'\1${DESTDIR}@PKGCONFIGDIR@')],
-               '%(srcdir)s/Makefile.in')
-        self.file_sub ([('(@INSTALL.*)@PKGCONFIGDIR@',
-                r'\1${DESTDIR}@PKGCONFIGDIR@')],
-               '%(srcdir)s/Makefile.am')
-    configure_command = ('LIBRESTRICT_ALLOW=/var/mail '
-                         + target.AutoBuild.configure_command)
-    ## need to call twice, first one triggers spurious Automake stuff.
-    compile_command = '(%s) || (%s)' % (target.AutoBuild.compile_command,
-                                        target.AutoBuild.compile_command)
-    
+     source = 'http://sourceforge.net/projects/libpng/files/libpng16/1.6.17/libpng-1.6.17.tar.gz'
+     dependencies = ['zlib-devel', 'tools::autoconf', 'tools::automake', 'tools::libtool']
+     def name (self):
+         return 'libpng'
+   
 class Libpng__tools (tools.AutoBuild, Libpng):
     dependencies = ['libtool']
     def patch (self):
