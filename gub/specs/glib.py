@@ -43,21 +43,21 @@ class Glib__darwin (Glib):
                        '%(builddir)s/libtool')
     #patches = ['patches/glib-2.27.ZLIB_VERNUM.patch']
 class Glib__darwin__x86 (Glib__darwin):
-    # LIBS bugfix from:
-    #   https://bugzilla.gnome.org/show_bug.cgi?id=586150
-    configure_variables = (Glib.configure_variables 
-			+ ' LIBS=-lresolv'
-			+ ' LDFLAGS=-march=i486'
-			+ ' CFLAGS=-march=i486'
-			)
-    def compile (self):
-        self.file_sub ([('(SUBDIRS = .*) tests', r'\1'),
-                        (r'GTESTER = \$.*', ''),
-                        ('(am__EXEEXT(_[0-9])? = )gtester.*', r'\1'),
-                        ('(am__append(_[0-9])? = )gtester', r'\1')],
-                       '%(builddir)s/glib/Makefile', must_succeed=True)
-        Glib__darwin.compile (self)
-        
+    source = 'http://ftp.gnome.org/pub/GNOME/sources/glib/2.38/glib-2.38.2.tar.xz'
+    patches = ['glib-2.43.mac-patch', 'glib-2.38-ZLIB_VERNUM.patch']
+    config_cache_overrides = target.AutoBuild.config_cache_overrides + '''
+glib_cv_stack_grows=${glib_cv_stack_grows=no}
+'''
+ 
+    dependencies = ['tools::glib', 'tools::libtool', 'gettext-devel', 'zlib', 'libffi']
+    configure_flags = (Glib.configure_flags
+		       + ' --disable-compile-warnings'
+		       + ' --disable-maintainer-mode' 
+		       + ' --disable-silent-rules' 
+		       + ' --disable-dtrace' 
+		       + ' --disable-modular-tests'
+                       )
+       
 class Glib__mingw (Glib):
     dependencies = Glib.dependencies + ['libiconv-devel']
     def update_libtool (self): # linux-x86, linux-ppc, freebsd-x86

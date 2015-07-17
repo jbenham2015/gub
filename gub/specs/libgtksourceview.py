@@ -12,8 +12,11 @@ class Libgtksourceview (target.AutoBuild):
 			+ ' --enable-static'
 			+ ' --disable-shared'
                        	)
-#class Libgtksourceview__mingw (Libgtksourceview):
-#    def install (self):
-#        target.AutoBuild.install (self)
-#        self.system ('cd %(install_prefix)s/lib/ && ln -s libgtksourceview-3.0.a libgtksourceview-3.0.dll.a')
-
+class Libgtksourceview__darwin (Libgtksourceview):
+   source = 'http://ftp.gnome.org/pub/gnome/sources/gtksourceview/2.6/gtksourceview-2.6.2.tar.gz'
+   #source = 'http://ftp.gnome.org/pub/gnome/sources/gtksourceview/2.11/gtksourceview-2.11.2.tar.gz'
+   patches = []
+   dependencies = [
+            'gtk+-devel',
+            'tools::intltool',
+            ]

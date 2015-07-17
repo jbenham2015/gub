@@ -399,6 +399,7 @@ OutFile "${INSTALLER_OUTPUT_DIR}/setup.exe"
         
         self.system (r'''cp %(nsisdir)s/*.nsh %(ns_dir)s
 cp %(nsisdir)s/*.nsi %(ns_dir)s
+cp %(sourcefiledir)s/gschemas.compiled %(installer_root)s/usr/share/glib-2.0/schemas/
 cp %(nsisdir)s/*.sh.in %(ns_dir)s''', locals ())
 
         root = self.expand ('%(installer_root)s')

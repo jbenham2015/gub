@@ -32,4 +32,10 @@ class Gdk_pixbuf_2__mingw(target.AutoBuild):
 			   #+ ' --without-libjpeg'
 			   + ' --disable-dependency-tracking'
 				)
+class Gdk_pixbuf_2__darwin(Gdk_pixbuf_2):
+    patches = ['gdk-pixbuf-2.28.2-no-gio-sniff.patch']
 
+    source = 'http://ftp.gnome.org/pub/gnome/sources/gdk-pixbuf/2.26/gdk-pixbuf-2.26.5.tar.xz'
+    #source = 'http://ftp.gnome.org/pub/GNOME/platform/2.32/2.32.1/sources/gdk-pixbuf-2.22.1.tar.gz'
+    #patches = ['gdk-pixbuf-mmx.patch']
+ 

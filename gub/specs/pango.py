@@ -68,6 +68,8 @@ set PANGO_MODULE_VERSION=%(pango_module_version)s
         self.map_locate (fix_prefix, etc, '*')
 
 class Pango__darwin (Pango):
+    source = 'http://ftp.acc.umu.se/pub/GNOME/sources/pango/1.30/pango-1.30.1.tar.xz'
+   
     configure_flags = (target.AutoBuild.configure_flags
                 + misc.join_lines ('''
 --with-cairo
@@ -75,14 +77,14 @@ class Pango__darwin (Pango):
 --with-included-modules=yes
 --with-dynamic-modules=no
 '''))
-
-class Pango__linux (Pango):
-  pass
-
-class Pango__freebsd (Pango__linux):
-    dependencies = Pango__linux.dependencies + ['libiconv-devel']
-
-class Pango__darwin (Pango):
+    dependencies = [
+            'tools::glib', 
+            'freetype-devel',
+            'fontconfig-devel',
+            'glib-devel',
+            'libtool',
+	    'cairo-devel'
+            ]
     def configure (self):
         Pango.configure (self)
         self.file_sub ([('nmedit', '%(target_architecture)s-nmedit')],
@@ -93,6 +95,13 @@ class Pango__darwin (Pango):
         self.dump ('''
 set PANGO_SO_EXTENSION=.so
 ''', '%(install_prefix)s/etc/relocate/pango.reloc', env=locals (), mode='a')
+
+
+class Pango__linux (Pango):
+  pass
+
+class Pango__freebsd (Pango__linux):
+    dependencies = Pango__linux.dependencies + ['libiconv-devel']
 
 class Pango__mingw (Pango):
         # FIXME: need -lpthread now?

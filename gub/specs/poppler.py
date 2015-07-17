@@ -26,5 +26,13 @@ class Poppler (target.AutoBuild):
 class Poppler__mingw (Poppler):
     #patches = ['poppler-0.11.2-mingw.patch']
     pass
-
+class Poppler__darwin (Poppler):
+    #source = 'http://poppler.freedesktop.org/poppler-0.20.0.tar.gz'
+    dependencies = ['tools::libtool', 'tools::glib',
+                'zlib-devel',
+                'fontconfig-devel',
+                'libpng',
+                'libjpeg-devel',
+                ]
+ 
 

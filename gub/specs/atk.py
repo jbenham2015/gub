@@ -13,14 +13,8 @@ class Atk__mingw (Atk):
         #target.AutoBuild.patch (self)
         #self.file_sub ([('\$\(srcdir\)/atk.def', 'atk.def')], '%(srcdir)s/atk/Makefile.in', must_succeed=True)
 
-from gub import build
-class Atk__darwin (build.BinaryBuild, build.SdkBuild):
+#class Atk__darwin (Atk):
     #dependencies = ['tools::glib', 'tools::libtool', 'gettext-devel', 'zlib', 'libffi']
-    source = 'http://www.denemo.org/downloads/gub/atk.zip'
-    def untar (self):
-        build.BinaryBuild.untar (self)
-        self.system ('''
-cd  %(srcdir)s/ && ls && mkdir usr && mv opt/local/include opt/local/lib opt/local/share usr/
-''')
+    #source = 'http://www.denemo.org/downloads/gub/atk.zip'
 
 
