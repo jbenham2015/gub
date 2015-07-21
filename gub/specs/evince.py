@@ -24,22 +24,18 @@ class Evince (target.AutoBuild):
 			   + ' --disable-tiff'
 			   + ' --disable-comics'
 			   + ' --without-gtk-unix-print')
-#  def install (self):
-#	target.AutoBuild.install (self)
-#        self.system ('cd %(install_prefix)s/lib/ && ln -s libevview3.a libevview3.dll.a')
-#	self.system ('cd %(install_prefix)s/lib/ && ln -s libevdocument3.a libevdocument3.dll.a')
 
 class Evince__darwin__x86 (Evince):
-  source = 'http://ftp.gnome.org/pub/GNOME/sources/evince/2.32/evince-2.32.0.tar.bz2'
+  source = 'http://ftp.gnome.org/pub/GNOME/sources/evince/2.31/evince-2.31.92.tar.bz2'
 
   dependencies = ['intltool','tools::intltool',
                   'poppler', 'gdk-pixbuf-2','gtk+']
-  #patches = ['evince-4-Makefile.patch']
-  patches = ['evince-4-Makefile.patch']
-  #patches = (Evince.patches + ['evince-3.2.1-no-x11.patch'])
+  patches = ['evince-2.32.0-configure.patch', 'evince-2.32.0.backenddir.patch',  'evince-4-Makefile.patch']#, 'evince-2.31.1.nosmclient.patch']#''evince-4-Makefile.patch', 
   #configure_variables = (target.AutoBuild.configure_variables
    #                        + ' CFLAGS="-g -O0" ')
   configure_flags = (target.AutoBuild.configure_flags
+			   + ' --enable-static'
+			   + ' --disable-shared'
                            + ' --without-libgnome'
                            + ' --without-gconf'
                            + ' --without-keyring'
@@ -50,10 +46,19 @@ class Evince__darwin__x86 (Evince):
                            + ' --disable-nautilus'
                            + ' --disable-dbus'
                            + ' --disable-gtk-doc'
-                           + ' --enable-pdf' #FIXME probably need pdf support
+                           + ' --enable-pdf'
                            + ' --disable-previewer' #not sure if this is needed
                            + ' --disable-nls'
                            + ' --without-gtk-unix-print')
+
+  def configure (self):
+        target.AutoBuild.configure (self)
+        self.file_sub ([
+                ('(SUBDIRS *=.*)smclient', r'\1 '),
+                ],'%(builddir)s/cut-n-paste/Makefile')
+        self.file_sub ([
+                ('(SUBDIRS *=.*)shell', r'\1 '),
+                ],'%(builddir)s/Makefile')
 
 
 class Evince__mingw (Evince):
@@ -70,3 +75,4 @@ class Evince__linux__x86 (Evince):
 			   + ' --with-smclient-backend=xsmp')
 
                
+

@@ -87,20 +87,22 @@ class Denemo__darwin (Denemo):
         'fondu',
         'osx-lilypad',
         ])
-    #patches = Denemo.patches + ['denemo-run-lilypond.patch']
+
     configure_flags = (Denemo.configure_flags
-		       	   + ' --disable-binreloc'
+        #                  + ' --enable-debug'
+                           + ' --disable-binreloc'
+                           + ' --disable-x11'
+                           + ' --disable-jack'
 			   + ' --enable-portmidi'
 			   + ' --enable-portaudio'
 			   + ' --disable-x11'
-			   + ' --enable-rubberband'
+			   + ' --disable-rubberband'
 			   + ' --disable-jack')
 
     configure_variables = (Denemo.configure_variables
-                           + ' CFLAGS="-g -O0 -D_HAVE_PORTMIDI_ -D_MACH_O_ -D_GUB_BUILD_ -I%(system_prefix)s/include/evince/3.0 " '
-                           + ' LDFLAGS="-L%(system_prefix)s/lib -Wl,-framework,CoreMIDI -lgcc_eh -lgcc -lc -lfftw3" ')
-	 
-    make_flags = Denemo.make_flags + ' LDFLAGS+="-lportmidi -lporttime"'
+                           + ' CFLAGS="-g -O0 -D_GUB_BUILD_ -D_MACH_O_ -I%(system_prefix)s/include/evince/2.32" '
+                           + ' LDFLAGS="-L%(system_prefix)s/lib -levview -levdocument -D_GUB_BUILD_ -D_MACH_O_" ')
+    #make_flags = Denemo.make_flags + ' LDFLAGS+="-lportmidi -lporttime"'
 
 class Denemo__darwin__ppc (Denemo__darwin):
     # make sure that PREFIX/include/unistd.h gets included

@@ -80,9 +80,9 @@ class Gtk_x___mingw (Gtk_x_without_X11):
 		+ ' --without-x')
 
 class Gtk_x___darwin (Gtk_x_without_X11):
-    source = 'http://ftp.gnome.org/pub/GNOME/platform/2.32/2.32.1/sources/gtk+-2.22.1.tar.gz'
-    #source = 'http://ftp.gnome.org/pub/gnome/sources/gtk+/2.24/gtk+-2.24.28.tar.xz'
-    #source = 'http://ftp.acc.umu.se/pub/gnome/sources/gtk+/3.6/gtk+-3.6.5.tar.xz'
+    #source = 'http://ftp.gnome.org/pub/GNOME/platform/2.32/2.32.1/sources/gtk+-2.22.1.tar.gz'
+    #source = 'http://ftp.gnome.org/pub/gnome/sources/gtk+/2.23/gtk+-2.23.90.tar.gz'
+    source = 'http://ftp.gnome.org/pub/gnome/sources/gtk+/2.24/gtk+-2.24.10.tar.xz'
 
     configure_flags = (Gtk_x_without_X11.configure_flags
                 + ' --with-gdktarget=quartz'

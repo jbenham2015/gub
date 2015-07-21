@@ -49,7 +49,6 @@ class Glib__darwin__x86 (Glib__darwin):
 glib_cv_stack_grows=${glib_cv_stack_grows=no}
 '''
  
-    dependencies = ['tools::glib', 'tools::libtool', 'gettext-devel', 'zlib', 'libffi']
     configure_flags = (Glib.configure_flags
 		       + ' --disable-compile-warnings'
 		       + ' --disable-maintainer-mode' 

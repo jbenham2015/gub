@@ -34,7 +34,7 @@ class Cairo__mingw (Cairo_without_X11):
     #                + ['pthreads-w32-devel'])
 
 class Cairo__darwin (Cairo_without_X11):
-     source = 'http://www.cairographics.org/releases/cairo-1.10.2.tar.gz'
+     #source = 'http://www.cairographics.org/releases/cairo-1.10.2.tar.gz'
      configure_flags = (Cairo_without_X11.configure_flags
                 + ' --enable-quartz'
 		+ ' --enable-quartz-font'
