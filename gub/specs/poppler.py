@@ -24,4 +24,7 @@ class Poppler__darwin (Poppler):
     source = 'http://poppler.freedesktop.org/poppler-0.16.1.tar.gz'
  #    source = 'http://poppler.freedesktop.org/poppler-0.20.5.tar.gz'
 
+class Poppler__linux (Poppler):
+    source = 'http://poppler.freedesktop.org/poppler-0.20.5.tar.gz'
+
 
