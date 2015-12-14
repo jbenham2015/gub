@@ -13,7 +13,7 @@ class Cairo (target.AutoBuild):
 		'glib',
                 'zlib-devel']
 class Cairo__linux (Cairo):
-    source = 'http://www.cairographics.org/releases/cairo-1.12.2.tar.xz'
+    source = 'http://www.cairographics.org/releases/cairo-1.12.18.tar.xz'
     dependencies = (Cairo.dependencies + ['libxrender-devel'])
 
 class Cairo_without_X11 (Cairo):
@@ -24,6 +24,7 @@ class Cairo_without_X11 (Cairo):
                 )
 
 class Cairo__mingw (Cairo_without_X11):
+    source = 'http://www.cairographics.org/releases/cairo-1.14.6.tar.xz'
     configure_flags = (Cairo_without_X11.configure_flags
                 + ' --enable-win32=yes'
                 + ' --enable-win32-font=yes'
