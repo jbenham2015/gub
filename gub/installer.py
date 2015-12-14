@@ -377,7 +377,29 @@ MY_PATCH_LEVEL=
         
         self.system ('cd %(darwin_bundle_dir)s/../ && tar cjf %(bundle_zip)s %(pretty_name)s.app',
                      locals ())
-       
+
+class LinuxBundle (Installer):
+     def __init__ (self, *args):
+         Installer.__init__ (self, *args)
+
+         self.bundle_tarball = '%(installer_uploads)s/%(name)s-%(installer_version)s-%(installer_build)s.%(platform)s.tar.xz'
+
+     def strip_prefixes (self):
+         return Installer.strip_prefixes (self)
+
+     def create_tarball (self, bundle_tarball):
+       lbundle_dir = '%(installerdir)s/%(name)s-%(installer_version)s'
+
+       self.system ('mkdir %(lbundle_dir)s && cp -r %(installer_root)s/* %(lbundle_dir)s/', locals ())
+       self.system ('cd %(lbundle_dir)s && rm -rf bin plugins snd src', locals ())
+       self.system ('cp %(sourcefiledir)s/pdfdocument.evince-backend %(lbundle_dir)s/usr/lib//evince/3/backends/pdfdocument.evince-backend', locals())
+       self.system ('cp %(sourcefiledir)s/Launch_Denemo.sh %(lbundle_dir)s', locals())
+       self.system ('tar -C %(installerdir)s -Jcf %(bundle_tarball)s %(name)s-%(installer_version)s', locals ())
+
+     def create (self):
+         Installer.create (self)
+         self.create_tarball (self.bundle_tarball)
+
 class MingwRoot (Installer):
     def __init__ (self, *args):
         Installer.__init__ (self, *args)
@@ -411,6 +433,7 @@ OutFile "${INSTALLER_OUTPUT_DIR}/setup.exe"
         self.system (r'''cp %(nsisdir)s/*.nsh %(ns_dir)s
 cp %(nsisdir)s/*.nsi %(ns_dir)s
 cp %(sourcefiledir)s/gschemas.compiled %(installer_root)s/usr/share/glib-2.0/schemas/
+cp %(sourcefiledir)s/settings.ini %(installer_root)s/usr/etc/gtk-3.0/
 cp %(nsisdir)s/*.sh.in %(ns_dir)s''', locals ())
 
         root = self.expand ('%(installer_root)s')
@@ -487,7 +510,7 @@ def get_installer (settings, *arguments):
         'freebsd-64' : Shar,
         'linux-arm-softfloat' : Shar,
         'linux-arm-vfp' : Linux_installer,
-        'linux-x86' : Shar,
+        'linux-x86' : LinuxBundle,
         'linux-64' : Shar,
         'linux-ppc' : Shar,
         'mingw' : Nsis,
