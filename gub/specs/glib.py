@@ -42,6 +42,11 @@ class Glib__darwin (Glib):
         self.file_sub ([('nmedit', '%(target_architecture)s-nmedit')],
                        '%(builddir)s/libtool')
     #patches = ['patches/glib-2.27.ZLIB_VERNUM.patch']
+class Glib__linux__x86 (Glib):
+    config_cache_overrides = target.AutoBuild.config_cache_overrides + '''
+glib_cv_stack_grows=${glib_cv_stack_grows=no}
+'''
+
 class Glib__darwin__x86 (Glib__darwin):
     source = 'http://ftp.gnome.org/pub/GNOME/sources/glib/2.38/glib-2.38.2.tar.xz'
     patches = ['glib-2.43.mac-patch', 'glib-2.38-ZLIB_VERNUM.patch']
