@@ -11,10 +11,10 @@ from gub import repository
 from gub import target
 
 class Denemo (target.AutoBuild):
-    #source = 'git://git.savannah.gnu.org/denemo.git'
-    #branch = 'master'
+    source = 'git://git.savannah.gnu.org/denemo.git'
+    branch = 'master'
     
-    source = 'http://denemo.org/downloads/denemo-1.2.4.tar.gz'
+    #source = 'http://denemo.org/downloads/denemo-1.2.4.tar.gz'
     patches = ['denemo-1.1.4-run-lilypond.patch', 'denemo-lilypond-path.patch']
 
     dependencies = [
