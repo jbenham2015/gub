@@ -3,7 +3,7 @@ from gub import tools
 
 class Netpbm__tools (tools.AutoBuild):
     # source='svn:https://svn.sourceforge.net/svnroot/netpbm/stable&revision=172'
-    source='http://lilypond.org/download/gub-sources/netpbm-patched/netpbm-patched-10.35.tar.bz2'
+    source='http://lilypond.org/downloads/gub-sources/netpbm-patched/netpbm-patched-10.35.tar.bz2'
     patches = ['netpbm-10.35-glibc-2.10.1-name-conflict.patch']
     parallel_build_broken = True
     dependencies = ['flex', 'libjpeg', 'libpng', 'libtiff', 'zlib'] #libxml2? libx11-dev
@@ -19,7 +19,7 @@ libpbm3.c:116: fout: incompatible type for argument 1 of __builtin_ia32_pcmpeqb
 CC=gcc
 CFLAGS='-O2 -fPIC -flax-vector-conversions'
 LDFLAGS='%(rpath)s -L%(builddir)s/pbm -L%(builddir)s/pgm -L%(builddir)s/pnm -L%(builddir)s/ppm'
-LADD=-lm
+LADD='-lm -lz'
 LINUXSVGALIB=NONE
 XML2LD=NONE
 XML2_LIBS=NONE
