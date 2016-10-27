@@ -57,6 +57,7 @@ class Gmp__tools (tools.AutoBuild, Gmp):
     dependencies = ['bison', 'flex', 'libtool', 'xzutils']
     configure_variables = (tools.AutoBuild.configure_variables
                            # avoid __isoc99_fscanf@@GLIBC_2.7 etc
+<<<<<<< HEAD
                            + ' CPPFLAGS=-D_GNU_SOURCE')
     def __init__ (self, settings, source):
         tools.AutoBuild.__init__ (self, settings, source)
@@ -65,3 +66,7 @@ class Gmp__tools (tools.AutoBuild, Gmp):
                 self.configure_variables += ' ABI=32'
             elif settings.target_bits == "64":
                 self.configure_variables += ' ABI=64'
+=======
+			   + ' CPPFLAGS=-D_GNU_SOURCE'
+                           + ' ABI=32')
+>>>>>>> fe5abd652386985530dc1142f1e7a5657e6d6e58

@@ -4,7 +4,11 @@ from gub import misc
 from gub import tools
 
 class ImageMagick__tools (tools.AutoBuild):
+<<<<<<< HEAD
     source = 'http://www.imagemagick.org/download/releases/ImageMagick-6.5.7-9.tar.xz'
+=======
+    source = 'http://www.imagemagick.org/download/ImageMagick.tar.xz'
+>>>>>>> fe5abd652386985530dc1142f1e7a5657e6d6e58
     dependencies = [
             'automake',
             'bzip2',

@@ -17,7 +17,7 @@ from gub import commands
 # barf, this should be in config file, not in code
 pretty_names = {
     'arbora': 'ArborA',
-    'denemo': 'GNU_Denemo',
+    'denemo': 'Denemo',
     'git': 'Git',
     'lilypond': 'LilyPond',
     'openoffice': 'Go-Oo_OpenOffice.org',
@@ -40,7 +40,7 @@ class Installer (context.RunnableContext):
         self.strip_command \
             = '%(cross_prefix)s/bin/%(target_architecture)s-strip' 
         self.no_binary_strip = []
-        self.no_binary_strip_extensions = ['.la', '.py', '.def', '.scm', '.pyc']
+        self.no_binary_strip_extensions = ['.sh', '.la', '.py', '.def', '.scm', '.pyc']
         self.installer_uploads = settings.uploads
         self.checksum = ''
         self.name = name
@@ -330,16 +330,28 @@ rm -rf %(darwin_bundle_dir)s
 # FIXME: ask TarBall where source lives
 LIBRESTRICT_IGNORE=%(tools_prefix)s/bin/tar tar -C %(installerdir)s -zxf %(downloads)s/osx-lilypad/osx-lilypad-universal-%(osx_lilypad_version)s.tar.gz
 mkdir -p %(darwin_bundle_dir)s/Contents/Resources
-touch %(darwin_bundle_dir)s/Contents/Info.plist # FIXME - this may need content
+cp %(sourcefiledir)s/Info.plist %(darwin_bundle_dir)s/Contents/Info.plist
+#wget http://www.denemo.org/downloads/gub/Info.plist -O %(darwin_bundle_dir)s/Contents/Info.plist
 touch %(darwin_bundle_dir)s/Contents/Resources/Credits.html # FIXME - this may need content
 cp -pR --link %(installer_prefix)s/* %(darwin_bundle_dir)s/Contents/Resources/
+mkdir -p %(darwin_bundle_dir)s/Contents/MacOS
+cp %(sourcefiledir)s/denemo.sh %(darwin_bundle_dir)s/Contents/MacOS/denemo.sh
+#wget http://www.denemo.org/downloads/gub/denemo -O %(darwin_bundle_dir)s/Contents/MacOS/denemo.sh
+chmod +x %(darwin_bundle_dir)s/Contents/MacOS/denemo.sh
+cp %(sourcefiledir)s/denemo.icns %(darwin_bundle_dir)s/Contents/MacOS/denemo.icns
+#wget http://www.denemo.org/downloads/gub/denemo.icns -O %(darwin_bundle_dir)s/Contents/denemo.icns
 mkdir -p %(darwin_bundle_dir)s/Contents/Resources/license
 cp -pR --link %(installer_root)s/license*/* %(darwin_bundle_dir)s/Contents/Resources/license/
+touch %(darwin_bundle_dir)s/Contents/Resources/Credits.html # FIXME - this may need content
+#cp -pR --link %(installer_prefix)s/* %(darwin_bundle_dir)s/Contents/Resources/
+cp %(sourcefiledir)s/denemo.icns %(darwin_bundle_dir)s/Contents/Resources/denemo.icns
+#wget http://www.denemo.org/downloads/gub/denemo.icns -O %(darwin_bundle_dir)s/Contents/Resources/denemo.icns
+cp %(sourcefiledir)s/pdfdocument.evince-backend %(darwin_bundle_dir)s/Contents/Resources/lib/evince/3/backends/pdfdocument.evince-backend
 ''', locals ())
-        self.file_sub ([('''PACKAGE_NAME=LilyPond
-MAJOR_VERSION=2
-MINOR_VERSION=11
-PATCH_LEVEL=41
+        self.file_sub ([('''PACKAGE_NAME=Denemo
+MAJOR_VERSION=1
+MINOR_VERSION=0
+PATCH_LEVEL=0
 MY_PATCH_LEVEL=
 ''', '%(installer_version)s-%(installer_build)s'),
                         ('2.[0-9]+.[0-9]+-[0-9]', '%(installer_version)s-%(installer_build)s'),
@@ -367,8 +379,29 @@ MY_PATCH_LEVEL=
         
         self.system ('cd %(darwin_bundle_dir)s/../ && tar cjf %(bundle_zip)s %(pretty_name)s.app',
                      locals ())
-        
-        
+
+class LinuxBundle (Installer):
+     def __init__ (self, *args):
+         Installer.__init__ (self, *args)
+
+         self.bundle_tarball = '%(installer_uploads)s/%(name)s-%(installer_version)s-%(installer_build)s.%(platform)s.tar.xz'
+
+     def strip_prefixes (self):
+         return Installer.strip_prefixes (self)
+
+     def create_tarball (self, bundle_tarball):
+       lbundle_dir = '%(installerdir)s/%(name)s-%(installer_version)s'
+
+       self.system ('mkdir %(lbundle_dir)s && cp -r %(installer_root)s/* %(lbundle_dir)s/', locals ())
+       self.system ('cd %(lbundle_dir)s && rm -rf bin plugins snd src', locals ())
+       self.system ('cp %(sourcefiledir)s/pdfdocument.evince-backend %(lbundle_dir)s/usr/lib//evince/3/backends/pdfdocument.evince-backend', locals())
+       self.system ('cp %(sourcefiledir)s/Launch_Denemo.sh %(lbundle_dir)s', locals())
+       self.system ('tar -C %(installerdir)s -Jcf %(bundle_tarball)s %(name)s-%(installer_version)s', locals ())
+
+     def create (self):
+         Installer.create (self)
+         self.create_tarball (self.bundle_tarball)
+
 class MingwRoot (Installer):
     def __init__ (self, *args):
         Installer.__init__ (self, *args)
@@ -401,6 +434,8 @@ OutFile "${INSTALLER_OUTPUT_DIR}/setup.exe"
         
         self.system (r'''cp %(nsisdir)s/*.nsh %(ns_dir)s
 cp %(nsisdir)s/*.nsi %(ns_dir)s
+cp %(sourcefiledir)s/gschemas.compiled %(installer_root)s/usr/share/glib-2.0/schemas/
+cp %(sourcefiledir)s/settings.ini %(installer_root)s/usr/etc/gtk-3.0/
 cp %(nsisdir)s/*.sh.in %(ns_dir)s''', locals ())
 
         root = self.expand ('%(installer_root)s')
@@ -477,7 +512,7 @@ def get_installer (settings, *arguments):
         'freebsd-64' : Shar,
         'linux-arm-softfloat' : Shar,
         'linux-arm-vfp' : Linux_installer,
-        'linux-x86' : Shar,
+        'linux-x86' : LinuxBundle,
         'linux-64' : Shar,
         'linux-ppc' : Shar,
         'mingw' : Nsis,

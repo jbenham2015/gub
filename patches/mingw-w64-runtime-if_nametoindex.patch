@@ -1,0 +1,14 @@
+diff -rupN mingw32/i686-w64-mingw32/include/netioapi.h mingw32.new/i686-w64-mingw32/include/netioapi.h
+--- mingw32/i686-w64-mingw32/include/netioapi.h	2014-12-21 05:46:38.000000000 -0600
++++ mingw32.new/i686-w64-mingw32/include/netioapi.h	2015-03-29 20:37:15.729891392 -0500
+@@ -316,10 +316,6 @@ PCHAR WINAPI if_indextoname(
+   PCHAR InterfaceName
+ );
+ 
+-NET_IFINDEX WINAPI if_nametoindex(
+-  PCSTR InterfaceName
+-);
+-
+ NETIO_STATUS WINAPI ConvertInterfaceGuidToLuid(
+   const GUID *InterfaceGuid,
+   PNET_LUID InterfaceLuid

@@ -19,7 +19,16 @@ class Pangocairo__mingw (Pangocairo):
                 + ' --disable-rebuilds')
 
 class Pangocairo__darwin (Pangocairo):
-    source = 'http://ftp.gnome.org/pub/GNOME/platform/2.29/2.29.91/sources/pango-1.27.1.tar.gz'
+    source = 'http://ftp.acc.umu.se/pub/GNOME/sources/pango/1.30/pango-1.30.1.tar.xz'
+   
+    dependencies = [
+            'tools::glib', 
+            'freetype-devel',
+            'fontconfig-devel',
+            'glib-devel',
+            'libtool',
+	    'cairo-devel'
+            ]
     xxx_patches = Pangocairo.patches + [
         'pango-1.26.0-darwin-cx-font.patch',
         ]

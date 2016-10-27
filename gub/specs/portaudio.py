@@ -3,10 +3,13 @@ from gub import repository
 from gub import target
 
 class Portaudio (target.AutoBuild):
-    source = 'http://www.portaudio.com/archives/pa_stable_v19_20071207.tar.gz'
+    #worked! source = 'http://www.portaudio.com/archives/pa_stable_v19_20071207.tar.gz'
+    #http://www.portaudio.com/archives/pa_stable_v19_20110326.tgz
+    #http://www.portaudio.com/archives/pa_stable_v19_20111121.tgz
+    source = 'http://www.portaudio.com/archives/pa_stable_v19_20140130.tgz'
     # useless, changes every night
-    # source = 'http://www.portaudio.com/archives/pa_snapshot.tgz'
-    source = 'svn:http://www.portaudio.com/repos/portaudio/trunk&revision=1428'
+    #source = 'http://www.portaudio.com/archives/pa_snapshot.tgz'
+    #source = 'svn:http://www.portaudio.com/repos/portaudio/trunk&revision=1428'
     dependencies = [
         'tools::automake',
         'tools::libtool',
@@ -76,6 +79,7 @@ collect2: ld returned 1 exit status
 '''
 
 class Portaudio__darwin (Portaudio):
+    source = 'http://www.portaudio.com/archives/pa_stable_v19_20111121.tgz'
     configure_variables = (Portaudio.configure_variables
                            + ''' CFLAGS='-DMACH_KERNEL=1 -Wno-multichar' ''')
     def patch (self):
