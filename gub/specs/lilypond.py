@@ -11,7 +11,7 @@ from gub.specs import ghostscript
 
 VERSION='v2.14'
 def url (version=VERSION):
-    url = 'http://lilypond.org/download/source/%(version)s/' % locals ()
+    url = 'http://lilypond.org/downloads/source/%(version)s/' % locals ()
     raw_version_file = 'lilypond-%(version)s.index' % locals ()
     return misc.latest_url (url, 'lilypond', raw_version_file)
 
@@ -35,7 +35,7 @@ sheet music from a high-level description file.'''
         'guile-devel',
         'pango-devel',
         'python-devel',
-        'urw-fonts',
+        'tools::fonts-texgyre',
 
         'tools::autoconf',
         'tools::bison',
@@ -61,7 +61,7 @@ sheet music from a high-level description file.'''
                        + ' --enable-relocation'
                        + ' --enable-rpath'
                        + ' --disable-documentation'
-                       + ' --with-ncsb-dir=%(system_prefix)s/share/fonts/default/Type1'
+                       + ' --with-texgyre-dir=%(tools_prefix)s/share/fonts/opentype/texgyre'
                        )
     make_flags = ' TARGET_PYTHON=/usr/bin/python'
 
@@ -173,9 +173,6 @@ class LilyPond__mingw (LilyPond):
             'tools::icoutils',
             'mingw-w64-runtime-winpthread-dll',
             ]
-    python_lib = '%(system_prefix)s/bin/libpython*.dll'
-    make_flags = (LilyPond.make_flags
-                  + ' LDFLAGS="%(python_lib)s"'  % locals ())
     # ugh Python hack: C&P Cygwin
     def compile (self):
         self.system ('''

@@ -144,7 +144,7 @@ def version_from_pc_in (pc_in, default_version='0.0.0'):
     return default_version
 
 def version_to_string (t):
-    if t[-1]:
+    if t[-1] and t[-1] != '0':
         return '%s-%s' % ('.'.join (map (str, t[:-1])), t[-1])
     return '.'.join (map (str, t[:-1]))
 
@@ -158,17 +158,13 @@ def string_to_version (s):
     s = re.sub ('([^0-9][^0-9]*)', ' \\1 ', s)
     s = re.sub ('[ _.-][ _.-]*', ' ', s)
     s = s.strip ()
-    def atoi (x):
-        if re.match ('^[0-9]+$', x):
-            return int (x)
-        return x
-    return tuple (map (atoi, (s.split (' '))))
+    return tuple (s.split (' '))
 
 def is_ball (s):
     # FIXME: do this properly, by identifying different flavours:
     # .deb, tar.gz, cygwin -[build].tar.bz2 etc and have simple
     # named rules for them.
-    return re.match ('^(.*?)[-_]([0-9].*(-[0-9]+)?)([._][a-z]+[0-9]*)?(\.tar\.(bz2|gz)|\.gu[bp]|\.deb|\.tgz|\.zip)$', s)
+    return re.match ('^(.*?)[-_]([0-9].*(-[0-9]+)?)([._][a-z]+[0-9]*)?(\.tar\.(bz2|gz|xz|lzma)|\.gu[bp]|\.deb|\.tgz|\.txz|\.tlz|\.zip)$', s)
 
 def split_ball (s):
     p = s.rfind ('/')
@@ -317,7 +313,7 @@ def download_url (original_url, dest_dir,
                   dest_name='',
                   local=[],
                   cache=[os.environ.get ('GUB_DOWNLOAD_CACHE', '')],
-                  fallback=['http://lilypond.org/download/gub-sources'],
+                  fallback=['http://lilypond.org/downloads/gub-sources'],
                   progress=sys.stderr.write):
 
     assert type (local) == list

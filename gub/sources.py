@@ -16,8 +16,8 @@ from gub import mirrors
 gnu = 'http://ftp.gnu.org/pub/gnu'
 nongnu = 'http://download.savannah.nongnu.org/releases'
 sf = 'http://surfnet.dl.sourceforge.net/sourceforge'
-gub = 'http://lilypond.org/download/gub-sources'
-lp = 'http://lilypond.org/download/sources'
+gub = 'http://lilypond.org/downloads/gub-sources'
+lp = 'http://lilypond.org/downloads/sources'
 freedesktop = '.freedesktop.org/releases'
 
 ltool = mirrors.gnu % { 'name': 'libtool', 'version': '1.5.22', 'format': 'gz'}
@@ -44,6 +44,6 @@ netpbm = join (gub, 'netpbm-patched-10.35.tar.bz2')
 pkg_config = 'http://pkg-config' + join (freedesktop, 'pkg-config-0.20.tar.gz')
 potrace = join (sf, 'potrace/potrace-1.7.tar.gz')
 python = 'http://python.org/ftp/python/%(version)s/Python-2.4.2.tar.bz2'
-imagemagick = 'ftp://ftp.nluug.nl/pub/ImageMagick/ImageMagick-6.4.1-3.tar.bz2'
+imagemagick = 'http://www.imagemagick.org/download/releases/ImageMagick-6.5.7-9.tar.gz'
 texinfo = join (gnu, 'texinfo/texinfo-4.8.tar.bz2')
 ghostscript  = 'ftp://mirror.cs.wisc.edu/pub/mirrors/ghost/GPL/gs860/ghostscript-8.60.tar.bz2'

@@ -9,7 +9,7 @@ class LilyPond (lilypond.LilyPond):
 LilyPond lets you create music notation.  It produces beautiful
 sheet music from a high-level description file.'''
     subpackage_names = ['doc', '']
-    source = 'http://lilypond.org/download/source/v2.14/lilypond-2.14.1.tar.gz'
+    source = 'http://lilypond.org/downloads/source/v2.14/lilypond-2.14.1.tar.gz'
 #    source = 'git://git.sv.gnu.org/lilypond.git'
     dependencies = gup.gub_to_distro_deps (lilypond.LilyPond.dependencies,
                                            cygwin.gub_to_distro_dict) + [
@@ -24,10 +24,9 @@ sheet music from a high-level description file.'''
                                                ]
     configure_flags = (lilypond.LilyPond.configure_flags
                        .replace ('--enable-relocation', '--disable-relocation'))
-    python_lib = '%(system_prefix)s/bin/libpython*.dll'
     LDFLAGS = '-L%(system_prefix)s/lib -L%(system_prefix)s/bin -L%(system_prefix)s/lib/w32api'
     make_flags = (lilypond.LilyPond.make_flags
-                  + ' LDFLAGS="%(LDFLAGS)s %(python_lib)s"')
+                  + ' LDFLAGS="%(LDFLAGS)s"')
 #    branch = 'stable/2.12'
     def __init__ (self, settings, source):
         lilypond.LilyPond.__init__ (self, settings, source)

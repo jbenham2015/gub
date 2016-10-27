@@ -246,17 +246,6 @@ cd ${bindir};
     done
 cd - > /dev/null;
 
-
-## fontconfig lily fonts
-mkdir -p ${prefix}/usr/etc/fonts/conf.d
-cat <<EOF > ${prefix}/usr/etc/fonts/conf.d/00-lilypond.conf
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-        <dir>${prefix}/usr/share/lilypond/current/fonts/otf</dir>
-</fontconfig>
-EOF
-
 ###################
 ## uninstall script
 
@@ -302,7 +291,7 @@ tail -c+%(header_length)012d "$0" | tar -C "${prefix}" %(_z)s -xf -
 
 documentation="http://%(name)s.org/doc"
 
-mirror="http://lilypond.org/download"
+mirror="http://lilypond.org/downloads"
 doc_url_base="$mirror/binaries/documentation"
 if test "$doc" = yes; then
     documentation="file://${prefix}/usr/share/doc/lilypond/html/index.html
