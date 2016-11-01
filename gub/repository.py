@@ -115,11 +115,12 @@ class Repository:
         except:
             return default_version
     def version_from_configure_ac (self, file_name='configure.ac', default_version='0.0.0'):
-        try:
-            return misc.version_from_configure_ac (self.read_file (file_name),
-                                                   default_version)
-        except:
-            return default_version
+         try:
+             return misc.version_from_configure_ac (self.read_file (file_name),
+                                                    default_version)
+         except:
+             return default_version
+
     def version_from_configure_in (self, file_name='configure.in', default_version='0.0.0'):
         try:
             return misc.version_from_configure_in (self.read_file (file_name),
